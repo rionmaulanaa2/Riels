@@ -78,6 +78,19 @@ local function notsu()
 end
 
 -- ============================================================================
+-- WALL HELPERS
+-- ============================================================================
+local function remove_walls()
+ local walls = workspace:FindFirstChild('Walls')
+ if not walls then return end
+ for i, v in pairs(walls:GetDescendants()) do
+  if v:IsA'BasePart' and v.Name:lower() == 'wall' then
+   v:Destroy()
+  end
+ end
+end
+
+-- ============================================================================
 -- REMOTE ACTIONS
 -- ============================================================================
 local function upgradespeed()
@@ -254,6 +267,15 @@ local Asa = Main:Toggle({
   getgenv().Asa = state
  end
 })
+local Rw = Main:Toggle({
+ Title = "Remove walls",
+ Icon = "sparkles",
+ Type = "Toggle",
+ Value = false,
+ Callback = function(state)
+  getgenv().Rw = state
+ end
+})
 local Ar = Main:Toggle({
  Title = "Auto rebirth",
  Icon = "sparkles",
@@ -358,6 +380,13 @@ spawn(function()
    spawn(function()
     pcall(function()
      sellall()
+    end)
+   end)
+  end
+  if getgenv().Rw then
+   spawn(function()
+    pcall(function()
+     remove_walls()
     end)
    end)
   end
