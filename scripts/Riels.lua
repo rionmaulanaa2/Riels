@@ -165,16 +165,16 @@ local function autobrainrot()
      end)
     end
    task.wait(1)
-   local handle = v:FindFirstChild'Handle'
-   if handle then
-    local prompt = handle.TakePrompt
-    if prompt then
-     pcall(function()
-      task.wait(1)
-      fireproximityprompt(prompt)
-     end)
+    local handle = v:FindFirstChild'Handle'
+    if handle then
+     local prompt = handle.TakePrompt
+     if prompt then
+      pcall(function()
+        prompt.HoldDuration = 0
+        fireproximityprompt(prompt)
+      end)
+     end
     end
-   end
   end
  end
 end
