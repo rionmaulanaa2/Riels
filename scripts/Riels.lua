@@ -1,52 +1,20 @@
 -- TODO: fix auto brainrots ( im not fixing xd )
 repeat print'loading' until game:IsLoaded()
+
+-- ============================================================================
+-- SERVICES / GLOBALS
+-- ============================================================================
 local p = game:GetService'Players'
+local TweenService = game:GetService'TweenService'
 local reps = game:GetService'ReplicatedStorage'
 local rf = reps.RemoteFunctions
 local lp = p.LocalPlayer
-local function godmode()
- local at = workspace.ActiveTsunamis
- if not at then return end
- for i, v in pairs(at:GetDescendants()) do
-  if v:IsA'BasePart' and v.Name == 'Hitbox' then
-   v:Destroy()
-  end
- end
-end
-local function notsu()
- local at = workspace.ActiveTsunamis
- if not at then return end
- for i, v in pairs(at:GetDescendants()) do
-  if v:IsA'BasePart' then
-   v.Transparency = 1
-  end
- end
-end
-local function upgradespeed()
- local remote = rf.UpgradeSpeed
- remote:InvokeServer(5)
-end
-local function rebirth()
- local remote = rf.Rebirth
- remote:InvokeServer()
-end
-local function upgrade()
- local remote = rf.UpgradeBase
- remote:InvokeServer()
-end
-local function upgradec()
- local remote = rf.UpgradeCarry
- remote:InvokeServer()
-end
-local function sellall()
- local remote = rf.SellAll
- remote:InvokeServer()
-end
-local function upgradeb(slot)
- --"Slot1"
- local remote = rf.UpgradeBrainrot
- remote:InvokeServer(slot)
-end
+
+local tier = ''
+
+-- ============================================================================
+-- WORLD HELPERS
+-- ============================================================================
 local function getbase()
  local bases = workspace.Bases
  for i, v in pairs(bases:GetChildren()) do
@@ -56,15 +24,7 @@ local function getbase()
  end
  return nil
 end
-local function upgradeallb()
- local base = getbase()
- if not base then print'nobase'return end
- for i, v in pairs(base.Slots:GetChildren()) do
-  if v:IsA'Model' and v.Name:lower():find'slot' and v:FindFirstChildWhichIsA'Tool' then
-   upgradeb(v.Name)
-  end
- end
-end
+
 local function home()
  local base = getbase()
  if not base then return end
@@ -74,11 +34,108 @@ local function home()
   game:GetService'Players'.LocalPlayer.Character.HumanoidRootPart.CFrame = part.CFrame
  end)
 end
+
 local function speedchanger()
  local speed = getgenv().Scv or 16
  lp:SetAttribute('CurrentSpeed', speed)
 end
-local tier = ''
+
+local function tween_to(cf, duration)
+ local character = lp.Character
+ if not character then return end
+ local hrp = character:FindFirstChild('HumanoidRootPart')
+ if not hrp then return end
+ local tween = TweenService:Create(
+  hrp,
+  TweenInfo.new(duration or 1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+  {CFrame = cf}
+ )
+ tween:Play()
+ tween.Completed:Wait()
+end
+
+-- ============================================================================
+-- TSUNAMI HELPERS
+-- ============================================================================
+local function godmode()
+ local at = workspace.ActiveTsunamis
+ if not at then return end
+ for i, v in pairs(at:GetDescendants()) do
+  if v:IsA'BasePart' and v.Name == 'Hitbox' then
+   v:Destroy()
+  end
+ end
+end
+
+local function notsu()
+ local at = workspace.ActiveTsunamis
+ if not at then return end
+ for i, v in pairs(at:GetDescendants()) do
+  if v:IsA'BasePart' then
+   v.Transparency = 1
+  end
+ end
+end
+
+-- ============================================================================
+-- REMOTE ACTIONS
+-- ============================================================================
+local function upgradespeed()
+ local remote = rf.UpgradeSpeed
+ remote:InvokeServer(5)
+end
+
+local function rebirth()
+ local remote = rf.Rebirth
+ remote:InvokeServer()
+end
+
+local function upgrade()
+ local remote = rf.UpgradeBase
+ remote:InvokeServer()
+end
+
+local function upgradec()
+ local remote = rf.UpgradeCarry
+ remote:InvokeServer()
+end
+
+local function sellall()
+ local remote = rf.SellAll
+ remote:InvokeServer()
+end
+
+local function upgradeb(slot)
+ --"Slot1"
+ local remote = rf.UpgradeBrainrot
+ remote:InvokeServer(slot)
+end
+
+local function upgradeallb()
+ local base = getbase()
+ if not base then print'nobase'return end
+ for i, v in pairs(base.Slots:GetChildren()) do
+  if v:IsA'Model' and v.Name:lower():find'slot' and v:FindFirstChildWhichIsA'Tool' then
+   upgradeb(v.Name)
+  end
+ end
+end
+
+-- ============================================================================
+-- AUTO BRAINROTS
+-- ============================================================================
+local function gettiers()
+ local tiers = {}
+ local ab = workspace.ActiveBrainrots
+ if not ab then return end
+ for i, v in pairs(ab:GetChildren()) do
+  if v:IsA'Folder' then
+   table.insert(tiers, v.Name)
+  end
+ end
+ return tiers
+end
+
 local function gayfunc()
  local plrgui = lp.PlayerGui
  if not plrgui then return end
@@ -89,6 +146,7 @@ local function gayfunc()
   end
  end
 end
+
 local function autobrainrot()
  if not tier or tier == '' then print'line 84'return end
  local ab = workspace.ActiveBrainrots
@@ -98,9 +156,14 @@ local function autobrainrot()
  for i, v in pairs(folder:GetChildren()) do
   if v:IsA'Model' and not v:GetAttribute'Fahh' then
    v:SetAttribute('Fahh','dih')
-   pcall(function()
-    game:GetService'Players'.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame
-   end)
+    if v.PrimaryPart then
+     pcall(function()
+      local target_pos = v.PrimaryPart.Position
+      local staging = CFrame.new(target_pos.X, 3, -146)
+      tween_to(staging, 1)
+      tween_to(v.PrimaryPart.CFrame, 1)
+     end)
+    end
    task.wait(1)
    local handle = v:FindFirstChild'Handle'
    if handle then
@@ -115,17 +178,9 @@ local function autobrainrot()
   end
  end
 end
-local function gettiers()
- local tiers = {}
- local ab = workspace.ActiveBrainrots
- if not ab then return end
- for i, v in pairs(ab:GetChildren()) do
-  if v:IsA'Folder' then
-   table.insert(tiers, v.Name)
-  end
- end
- return tiers
-end
+-- ============================================================================
+-- UI
+-- ============================================================================
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 WindUI:SetNotificationLower(true)
 local Window = WindUI:CreateWindow({
@@ -265,6 +320,9 @@ local Tiers = AutoB:Dropdown({
   print(tier)
  end
 })
+-- ============================================================================
+-- MAIN LOOP
+-- ============================================================================
 spawn(function()
  while true do
   task.wait()
@@ -334,8 +392,6 @@ spawn(function()
   if getgenv().AutoBrainrots then
    spawn(function()
     pcall(function()
-     spawn(godmode)
-     spawn(notsu)
      spawn(gayfunc)
      spawn(autobrainrot)
     end)
