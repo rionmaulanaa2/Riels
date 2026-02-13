@@ -10,7 +10,7 @@ local reps = game:GetService'ReplicatedStorage'
 local rf = reps.RemoteFunctions
 local lp = p.LocalPlayer
 
-local version = '1.0.0'
+local version = '1.0.01'
 local tier = ''
 
 -- ============================================================================
@@ -133,19 +133,11 @@ end
 local function remove_walls()
  local walls = workspace:FindFirstChild('Walls')
  if walls then
-  for i, v in pairs(walls:GetDescendants()) do
-   if v:IsA'BasePart' then
-    v:Destroy()
-   end
-  end
+  walls:Destroy()
  end
  local vipwalls = workspace:FindFirstChild('VIPWalls')
  if vipwalls then
-  for i, v in pairs(vipwalls:GetDescendants()) do
-   if v:IsA'BasePart' then
-    v:Destroy()
-   end
-  end
+  vipwalls:Destroy()
  end
 end
 
@@ -232,12 +224,16 @@ local function autobrainrot()
      pcall(function()
        wait_until_tsunami_safe(5)
       enable_noclip()
+      local current_speed = lp:GetAttribute('CurrentSpeed') or 16
       local target_pos = v.PrimaryPart.Position
       local start_pos = CFrame.new(137, 5, -134)
       local staging = CFrame.new(target_pos.X, 5, -134)
-      tween_to(start_pos, 1)
-      tween_to(staging, 1)
-      tween_to(v.PrimaryPart.CFrame, 1)
+      local dist1 = (start_pos.Position - lp.Character.HumanoidRootPart.Position).Magnitude
+      local dist2 = (staging.Position - start_pos.Position).Magnitude
+      local dist3 = (target_pos - staging.Position).Magnitude
+      tween_to(start_pos, dist1 / current_speed)
+      tween_to(staging, dist2 / current_speed)
+      tween_to(v.PrimaryPart.CFrame, dist3 / current_speed)
       disable_noclip()
      end)
     end
