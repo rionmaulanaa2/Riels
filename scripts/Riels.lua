@@ -131,10 +131,19 @@ end
 -- ============================================================================
 local function remove_walls()
  local walls = workspace:FindFirstChild('Walls')
- if not walls then return end
- for i, v in pairs(walls:GetDescendants()) do
-  if v:IsA'BasePart' then
-   v:Destroy()
+ if walls then
+  for i, v in pairs(walls:GetDescendants()) do
+   if v:IsA'BasePart' then
+    v:Destroy()
+   end
+  end
+ end
+ local vipwalls = workspace:FindFirstChild('VIPWalls')
+ if vipwalls then
+  for i, v in pairs(vipwalls:GetDescendants()) do
+   if v:IsA'BasePart' then
+    v:Destroy()
+   end
   end
  end
 end
