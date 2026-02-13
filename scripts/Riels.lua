@@ -10,6 +10,7 @@ local reps = game:GetService'ReplicatedStorage'
 local rf = reps.RemoteFunctions
 local lp = p.LocalPlayer
 
+local version = '1.0.0'
 local tier = ''
 
 -- ============================================================================
@@ -260,9 +261,9 @@ end
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 WindUI:SetNotificationLower(true)
 local Window = WindUI:CreateWindow({
- Title = "Escape Tsumami For Brainrots!",
+ Title = "Escape Tsumami For Brainrots! v" .. version,
  Icon = "sparkles",
- Author = "by luau.org",
+ Author = "by rizuuu",
 })
 Window:SetToggleKey(Enum.KeyCode.L)
 local Main = Window:Tab({
