@@ -172,7 +172,9 @@ local function autobrainrot()
     if v.PrimaryPart then
      pcall(function()
       local target_pos = v.PrimaryPart.Position
-      local staging = CFrame.new(target_pos.X, 3, -146)
+      local start_pos = CFrame.new(137, 5, -134)
+      local staging = CFrame.new(target_pos.X, 5, -134)
+      tween_to(start_pos, 1)
       tween_to(staging, 1)
       tween_to(v.PrimaryPart.CFrame, 1)
      end)
