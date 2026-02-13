@@ -82,7 +82,7 @@ local function get_nearest_tsunami_distance(origin)
  if not at then return nil end
  local nearest
  for i, v in pairs(at:GetDescendants()) do
-  if v:IsA'BasePart' then
+  if v:IsA'BasePart' and v.Name == 'Hitbox' then
    local dist = (v.Position - origin).Magnitude
    if not nearest or dist < nearest then
     nearest = dist
@@ -103,6 +103,26 @@ local function wait_until_tsunami_safe(min_dist)
    return
   end
   task.wait(0.2)
+ end
+end
+
+local function enable_noclip()
+ local character = lp.Character
+ if not character then return end
+ for i, v in pairs(character:GetDescendants()) do
+  if v:IsA'BasePart' then
+   v.CanCollide = false
+  end
+ end
+end
+
+local function disable_noclip()
+ local character = lp.Character
+ if not character then return end
+ for i, v in pairs(character:GetDescendants()) do
+  if v:IsA'BasePart' then
+   v.CanCollide = true
+  end
  end
 end
 
@@ -200,13 +220,15 @@ local function autobrainrot()
    v:SetAttribute('Fahh','dih')
     if v.PrimaryPart then
      pcall(function()
-       wait_until_tsunami_safe(50)
+       wait_until_tsunami_safe(5)
+      enable_noclip()
       local target_pos = v.PrimaryPart.Position
       local start_pos = CFrame.new(137, 5, -134)
       local staging = CFrame.new(target_pos.X, 5, -134)
       tween_to(start_pos, 1)
       tween_to(staging, 1)
       tween_to(v.PrimaryPart.CFrame, 1)
+      disable_noclip()
      end)
     end
    task.wait(1)
