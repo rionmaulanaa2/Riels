@@ -77,6 +77,35 @@ local function notsu()
  end
 end
 
+local function get_nearest_tsunami_distance(origin)
+ local at = workspace:FindFirstChild('ActiveTsunamis')
+ if not at then return nil end
+ local nearest
+ for i, v in pairs(at:GetDescendants()) do
+  if v:IsA'BasePart' then
+   local dist = (v.Position - origin).Magnitude
+   if not nearest or dist < nearest then
+    nearest = dist
+   end
+  end
+ end
+ return nearest
+end
+
+local function wait_until_tsunami_safe(min_dist)
+ local character = lp.Character
+ if not character then return end
+ local hrp = character:FindFirstChild('HumanoidRootPart')
+ if not hrp then return end
+ while true do
+  local nearest = get_nearest_tsunami_distance(hrp.Position)
+  if not nearest or nearest > min_dist then
+   return
+  end
+  task.wait(0.2)
+ end
+end
+
 -- ============================================================================
 -- WALL HELPERS
 -- ============================================================================
@@ -171,6 +200,7 @@ local function autobrainrot()
    v:SetAttribute('Fahh','dih')
     if v.PrimaryPart then
      pcall(function()
+       wait_until_tsunami_safe(50)
       local target_pos = v.PrimaryPart.Position
       local start_pos = CFrame.new(137, 5, -134)
       local staging = CFrame.new(target_pos.X, 5, -134)
