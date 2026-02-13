@@ -113,7 +113,7 @@ local function remove_walls()
  local walls = workspace:FindFirstChild('Walls')
  if not walls then return end
  for i, v in pairs(walls:GetDescendants()) do
-  if v:IsA'BasePart' and v.Name:lower() == 'wall' then
+  if v:IsA'BasePart' then
    v:Destroy()
   end
  end
